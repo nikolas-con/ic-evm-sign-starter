@@ -2,19 +2,15 @@
   "version": 1,
   "dfx": "0.11.2",
   "canisters": {
-    "ic_evm_sign_started_backend": {
+    "backend": {
       "type": "rust",
-      "package": "ic_evm_sign_started_backend",
-      "candid": "src/ic_evm_sign_started_backend/ic_evm_sign_started_backend.did"
+      "package": "backend",
+      "candid": "src/backend/backend.did"
     },
-    "ic_evm_sign_started_frontend": {
-      "type": "assets",
-      "source": [
-        "src/ic_evm_sign_started_frontend/assets"
-      ],
-      "dependencies": [
-        "ic_evm_sign_started_backend"
-      ]
+    "identity": {
+      "type": "custom",
+      "candid": "identity/identity.did",
+      "wasm": "identity/identity.wasm"
     }
   },
   "defaults": {

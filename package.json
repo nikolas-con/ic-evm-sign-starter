@@ -1,0 +1,19 @@
+{
+  "name": "ic-evm-sign-started",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently -n evm,ic,dev -c bgBlue,bgMagenta,bgCyan  \"npm run start:local-node\" \"npm run start:ic\" \"npm run deploy:ic && npm run start:frontend\"",
+    "start:frontend": "cd src/frontend && npm start",
+    "start:local-node": "cd local-node && npm start",
+    "start:ic": "dfx start --clean",
+    "deploy:ic": "sleep 5 && dfx deploy"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  }
+}
