@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "dfx": "0.11.2",
+  "canisters": {
+    "ic_evm_sign_started_backend": {
+      "type": "rust",
+      "package": "ic_evm_sign_started_backend",
+      "candid": "src/ic_evm_sign_started_backend/ic_evm_sign_started_backend.did"
+    },
+    "ic_evm_sign_started_frontend": {
+      "type": "assets",
+      "source": [
+        "src/ic_evm_sign_started_frontend/assets"
+      ],
+      "dependencies": [
+        "ic_evm_sign_started_backend"
+      ]
+    }
+  },
+  "defaults": {
+    "build": {
+      "packtool": "",
+      "args": ""
+    }
+  },
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8000",
+      "type": "ephemeral"
+    }
+  }
+}
