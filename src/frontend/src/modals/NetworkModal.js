@@ -1,7 +1,7 @@
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton } from '@chakra-ui/react'
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
 import { Text } from '@chakra-ui/react'
-import { mainnets, testnets } from "../../helpers/networks"
+import { mainnets, testnets } from "../helpers/networks"
 
 
 const NetworkModal = ({ onClose, isOpen, setNetwork }) => {

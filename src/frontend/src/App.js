@@ -14,11 +14,9 @@ import {
   useDisclosure
 } from "@chakra-ui/react";
 
-import SendFundsModal from "./components/Modals/SendFundsModal";
-import TransactionsModal from "./components/Modals/TransactionsModal";
-import NetworkModal from "./components/Modals/NetworkModal";
-
-import IcLogo from "./components/IcLogo";
+import SendFundsModal from "./modals/SendFundsModal";
+import TransactionsModal from "./modals/TransactionsModal";
+import NetworkModal from "./modals/NetworkModal";
 
 import { getDelegationIdentity, getHostFromUrl } from "./helpers/utils";
 import { getActor } from './helpers/actor'
@@ -211,7 +209,7 @@ const App = () => {
                   }
                 </Box>
               ) : (
-                <Button onClick={login} rightIcon={<IcLogo />}>
+                <Button onClick={login} rightIcon={<img alt="logo" width={32} height={16} src={"./ic-logo.svg"} />}>
                   Login with
                 </Button>
               )}
