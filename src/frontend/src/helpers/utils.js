@@ -1,5 +1,6 @@
 import { DelegationChain, Ed25519KeyIdentity, DelegationIdentity } from "@dfinity/identity";
 
+import { Principal } from "@dfinity/principal";
 
 export const timeSinceShort = (date) => {
 
@@ -34,7 +35,6 @@ export const getDelegationIdentity = () => {
   return delegationIdentity
 }
 
-
 export const getHostFromUrl = (hostUrl) => {
   try {
       const url = new URL(hostUrl)
@@ -43,3 +43,6 @@ export const getHostFromUrl = (hostUrl) => {
       return ''
   }
 }
+
+// https://forum.dfinity.org/t/where-can-i-find-the-list-of-all-official-canisters-and-what-they-are-used-for/12011
+export const getPrincipalText = (i) => Principal.fromUint8Array([0, 0, 0, 0, 0, 0, 0, i, 1, 1]).toText()
