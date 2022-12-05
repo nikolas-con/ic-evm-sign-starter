@@ -217,10 +217,10 @@ const App = () => {
 
             <Divider mb="16px" mt="auto" />
             <Box>
-              <Button variant="ghost" onClick={onHistoryOpen} leftIcon={<HiClock />} disabled={!loggedIn}>History</Button>
+              <Button variant="ghost" onClick={onHistoryOpen} leftIcon={<HiClock />} disabled={!loggedIn || !address}>History</Button>
               {balance > 0 ?
-                <Button ml="8px" onClick={onSendOpen} leftIcon={<HiPlusCircle />} disabled={!loggedIn}>Transfer</Button> :
-                <Button ml="8px" onClick={handleTopUp} leftIcon={<HiArrowDownOnSquareStack />} disabled={!loggedIn}>Top up</Button>
+                <Button ml="8px" onClick={onSendOpen} leftIcon={<HiPlusCircle />} disabled={!loggedIn || !address}>Transfer</Button> :
+                <Button ml="8px" onClick={handleTopUp} leftIcon={<HiArrowDownOnSquareStack />} disabled={!loggedIn || !address}>Top up</Button>
               }
               <Button variant="ghost" ml="8px" onClick={logout} leftIcon={<HiArrowLeftCircle />} disabled={!loggedIn}>Logout</Button>
             </Box>
