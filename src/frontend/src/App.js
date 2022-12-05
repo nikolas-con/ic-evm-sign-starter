@@ -14,30 +14,25 @@ import {
   useDisclosure
 } from "@chakra-ui/react";
 
-import SendFundsModal from "./Modals/SendFundsModal";
-import TransactionsModal from "./Modals/TransactionsModal";
-import NetworkModal from "./Modals/NetworkModal";
+import SendFundsModal from "./components/Modals/SendFundsModal";
+import TransactionsModal from "./components/Modals/TransactionsModal";
+import NetworkModal from "./components/Modals/NetworkModal";
 
-import IcLogo from "./IcLogo";
+import IcLogo from "./components/IcLogo";
 
-import { getDelegationIdentity, getHostFromUrl } from "./utils";
-import { getActor } from './actor'
+import { getDelegationIdentity, getHostFromUrl } from "./helpers/utils";
+import { getActor } from './helpers/actor'
 
 import { ethers } from "ethers";
 
 import { HiClock, HiPlusCircle, HiArrowLeftCircle, HiArrowDownOnSquareStack, HiCog6Tooth, HiArrowTopRightOnSquare, HiOutlineClipboardDocument, HiOutlineClipboardDocumentCheck } from "react-icons/hi2";
 
-import { mainnets, testnets } from "./networks"
+import { mainnets, testnets } from "./helpers/networks"
+
+import { IC_URL, IDENTITY_CANISTER_ID, LOCAL_SIGNER } from './helpers/config'
 
 const chainId = localStorage.getItem("chain-id") ?? 0
 const defaultNetwork = [].concat(testnets, testnets).find(r => r.chainId === +chainId) ?? mainnets[0]
-
-// evm chain
-const LOCAL_SIGNER = process.env.LOCAL_SIGNER ?? "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC";
-
-// internet computer
-const IDENTITY_CANISTER_ID = process.env.REACT_APP_IDENTITY_CANISTER_ID ?? "ryjl3-tyaaa-aaaaa-aaaba-cai";
-const IC_URL = "http://localhost:8000";
 
 const actor = getActor()
 

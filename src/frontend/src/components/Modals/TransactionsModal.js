@@ -3,7 +3,7 @@ import { Table, Thead, Tbody, Tr, Th, Td, TableContainer } from "@chakra-ui/reac
 import { Button, IconButton  } from "@chakra-ui/react"
 import {  HiArrowTopRightOnSquare } from "react-icons/hi2";
 
-import { timeSinceShort } from '../utils'
+import { timeSinceShort } from '../../helpers/utils'
 import { ethers } from "ethers"
 
 

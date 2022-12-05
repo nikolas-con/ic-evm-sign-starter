@@ -1,9 +1,8 @@
 import { Actor, HttpAgent } from "@dfinity/agent";
 import { Principal } from "@dfinity/principal";
 
-// internet computer
-const IC_URL = "http://localhost:8000";
-const BACKEND_CANISTER_ID = process.env.REACT_APP_BACKEND_CANISTER_ID ?? "rrkah-fqaaa-aaaaa-aaaaq-cai";
+import {IC_URL, BACKEND_CANISTER_ID} from './config'
+
 
 const idleServiceOptions = (IDL) => {
   const transactions = IDL.Record({
