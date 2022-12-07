@@ -1,8 +1,6 @@
 import { Actor, HttpAgent } from "@dfinity/agent";
 import { Principal } from "@dfinity/principal";
-
 import {IC_URL, BACKEND_CANISTER_ID} from './config'
-
 
 const idleServiceOptions = (IDL) => {
   const transactions = IDL.Record({
@@ -13,7 +11,7 @@ const idleServiceOptions = (IDL) => {
     nonce: IDL.Nat64,
     transactions: IDL.Vec(transactions),
   });
-  const create_response = IDL.Record({
+  const create_address_response = IDL.Record({
     address: IDL.Text,
   });
   const sign_tx_response = IDL.Record({
@@ -26,9 +24,9 @@ const idleServiceOptions = (IDL) => {
   });
 
   return {
-    create: IDL.Func(
+    create_address: IDL.Func(
       [],
-      [IDL.Variant({ Ok: create_response, Err: IDL.Text })],
+      [IDL.Variant({ Ok: create_address_response, Err: IDL.Text })],
       ["update"]
     ),
     sign_evm_tx: IDL.Func(

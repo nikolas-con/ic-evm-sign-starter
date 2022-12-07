@@ -1,32 +1,16 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { ethers } from "ethers";
 import { AuthClient } from "@dfinity/auth-client";
 
-import {
-  Box,
-  Flex,
-  Button,
-  Heading,
-  Text,
-  Divider,
-  Spinner,
-  IconButton,
-  useToast,
-  useDisclosure
-} from "@chakra-ui/react";
-
+import { Box, Flex, Button, Heading, Text, Divider, Spinner, IconButton, useToast, useDisclosure } from "@chakra-ui/react";
+import { HiClock, HiPlusCircle, HiArrowLeftCircle, HiArrowDownOnSquareStack, HiCog6Tooth, HiArrowTopRightOnSquare, HiOutlineClipboardDocument, HiOutlineClipboardDocumentCheck } from "react-icons/hi2";
 import SendFundsModal from "./modals/SendFundsModal";
 import TransactionsModal from "./modals/TransactionsModal";
 import NetworkModal from "./modals/NetworkModal";
 
 import { getDelegationIdentity, getHostFromUrl } from "./helpers/utils";
 import { getActor } from './helpers/actor'
-
-import { ethers } from "ethers";
-
-import { HiClock, HiPlusCircle, HiArrowLeftCircle, HiArrowDownOnSquareStack, HiCog6Tooth, HiArrowTopRightOnSquare, HiOutlineClipboardDocument, HiOutlineClipboardDocumentCheck } from "react-icons/hi2";
-
 import { mainnets, testnets } from "./helpers/networks"
-
 import { IC_URL, IDENTITY_CANISTER_ID, LOCAL_SIGNER } from './helpers/config'
 
 const chainId = localStorage.getItem("chain-id") ?? 0
@@ -54,6 +38,7 @@ const App = () => {
     try {
       setBalance();
       const [caller] = await actor.get_caller_data(Number(network.chainId));
+      
       if(caller) {
         const { address, transactions } = caller;
         setAddress(address);
