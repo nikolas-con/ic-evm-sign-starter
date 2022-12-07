@@ -1,7 +1,7 @@
 use ic_cdk::export::candid::CandidType;
 use ic_cdk_macros::*;
 use ic_evm_sign;
-use ic_evm_sign::state::ChainData;
+use ic_evm_sign::state::TransactionChainData;
 
 #[derive(Debug, CandidType)]
 struct CreateAddressResponse {
@@ -19,7 +19,7 @@ struct DeployEVMContractResponse {
 #[derive(Debug, CandidType)]
 struct UserResponse {
     address: String,
-    transactions: ChainData,
+    transactions: TransactionChainData,
 }
 
 #[update]
