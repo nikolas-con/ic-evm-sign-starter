@@ -131,7 +131,7 @@ const App = () => {
 
     toast({ title: "Creating wallet...", variant: "subtle" });
 
-    const res = await actor.create();
+    const res = await actor.create_address();
 
     toast({ title: "New wallet created" });
 
