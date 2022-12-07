@@ -8,7 +8,8 @@
     "start:frontend": "cd src/frontend && npm start",
     "start:local-node": "npx hardhat node",
     "start:ic": "dfx start --clean",
-    "deploy:ic": "sleep 5 && dfx deploy"
+    "deploy:ic": "sleep 5 && dfx deploy",
+    "build": ""
   },
   "keywords": [],
   "author": "",
