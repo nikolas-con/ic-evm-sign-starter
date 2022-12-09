@@ -21,5 +21,20 @@ npm run start
 
 Then head to `http://localhost:3000`.
 
+## Production
+
+Deploy backend:
+```sh
+dfx deploy --network ic backend --argument '(opt variant { Production } )'
+```
+
+Then create `src/frontend/.env.production` with the backend canister id. Similar to `src/frontend/.env.production.sample`.
+
+Deploy frontend:
+```sh
+npm run build:frontend
+dfx deploy --network ic frontend
+```
+
 **Note:** The `npm start` script above starts 1) a local Internet Computer replica 2) a local hardhat node and 3) the React frontend of the project. After starting the IC replica it deploys the canister code and an Internet Identity canister for local authentication.
 
