@@ -1,7 +1,7 @@
 use ic_cdk::export::candid::CandidType;
 use ic_cdk_macros::*;
 use ic_evm_sign;
-use ic_evm_sign::state::{ TransactionChainData, Environment };
+use ic_evm_sign::state::{TransactionChainData, Environment};
 
 #[derive(Debug, CandidType)]
 struct CreateAddressResponse {
