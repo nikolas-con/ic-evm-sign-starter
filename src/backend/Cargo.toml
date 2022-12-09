@@ -10,4 +10,4 @@ crate-type = ["cdylib"]
 candid = "0.7.14" 
 ic-cdk = "0.5.2"
 ic-cdk-macros = "0.5.2"
-ic-evm-sign = "0.1.0"
+ic-evm-sign = { path = "../../../ic-evm-sign/lib" }
