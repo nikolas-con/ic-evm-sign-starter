@@ -1,4 +1,4 @@
-## Summary
+## Overview
 
 This is an example project of [ic-evm-sign](https://github.com/nikolas-con/ic-evm-sign), a library that signs EVM transactions on the Internet Computer. 
 
