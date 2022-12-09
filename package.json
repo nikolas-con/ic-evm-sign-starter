@@ -11,7 +11,7 @@
     "deploy:ic": "sleep 5 && npm run deploy:identity && npm run deploy:backend",
     "deploy:identity": "dfx deploy identity",
     "deploy:backend": "dfx deploy backend",
-    "build": ""
+    "build:frontend": "cd src/frontend && npm run build"
   },
   "keywords": [],
   "author": "",
