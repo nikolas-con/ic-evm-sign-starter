@@ -7,6 +7,12 @@
       "package": "backend",
       "candid": "src/backend/backend.did"
     },
+    "frontend": {
+      "type": "assets",
+      "source": [
+        "src/frontend/build"
+      ]
+    },
     "identity": {
       "type": "custom",
       "candid": "identity/identity.did",

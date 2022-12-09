@@ -1,15 +1,17 @@
 {
   "name": "ic-evm-sign-starter",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A starter project for ic-evm-sign rust crate",
   "scripts": {
     "postinstall": "cd src/frontend && npm i",
     "start": "concurrently -n evm,ic,dev -c bgBlue,bgMagenta,bgCyan  \"npm run start:local-node\" \"npm run start:ic\" \"npm run deploy:ic && npm run start:frontend\"",
     "start:frontend": "cd src/frontend && npm start",
     "start:local-node": "npx hardhat node",
     "start:ic": "dfx start --clean",
-    "deploy:ic": "sleep 5 && dfx deploy"
+    "deploy:ic": "sleep 5 && npm run deploy:identity && npm run deploy:backend",
+    "deploy:identity": "dfx deploy identity",
+    "deploy:backend": "dfx deploy backend",
+    "build": ""
   },
   "keywords": [],
   "author": "",

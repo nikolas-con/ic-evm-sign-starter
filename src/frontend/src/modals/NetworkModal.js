@@ -3,7 +3,6 @@ import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
 import { Text } from '@chakra-ui/react'
 import { mainnets, testnets } from "../helpers/networks"
 
-
 const NetworkModal = ({ onClose, isOpen, setNetwork }) => {
 
   const selectNetwork = (i, isMainnet) => {

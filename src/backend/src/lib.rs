@@ -1,14 +1,14 @@
 use ic_cdk::export::candid::CandidType;
 use ic_cdk_macros::*;
 use ic_evm_sign;
-use ic_evm_sign::state::ChainData;
+use ic_evm_sign::state::{TransactionChainData, Environment};
 
 #[derive(Debug, CandidType)]
-struct CreateResponse {
+struct CreateAddressResponse {
     address: String,
 }
 #[derive(Debug, CandidType)]
-struct SignatureInfo {
+struct SignTransactionResponse {
     sign_tx: Vec<u8>,
 }
 
@@ -17,34 +17,39 @@ struct DeployEVMContractResponse {
     tx: Vec<u8>,
 }
 #[derive(Debug, CandidType)]
-struct CallerResponse {
+struct UserResponse {
     address: String,
-    transactions: ChainData,
+    transactions: TransactionChainData,
+}
+
+#[ic_cdk_macros::init]
+fn init(evn_opt: Option<Environment>) {
+    ic_evm_sign::init(evn_opt);
 }
 
 #[update]
-async fn create() -> Result<CreateResponse, String> {
+async fn create_address() -> Result<CreateAddressResponse, String> {
     let principal_id = ic_cdk::caller();
 
-    let res = ic_evm_sign::create(principal_id)
+    let res = ic_evm_sign::create_address(principal_id)
         .await
         .map_err(|e| format!("Failed to call ecdsa_public_key {}", e))
         .unwrap();
 
-    Ok(CreateResponse {
+    Ok(CreateAddressResponse {
         address: res.address,
     })
 }
 
 #[update]
-async fn sign_evm_tx(hex_raw_tx: Vec<u8>, chain_id: u64) -> Result<SignatureInfo, String> {
+async fn sign_evm_tx(hex_raw_tx: Vec<u8>, chain_id: u64) -> Result<SignTransactionResponse, String> {
     let principal_id = ic_cdk::caller();
-    let res = ic_evm_sign::sign(hex_raw_tx, chain_id, principal_id)
+    let res = ic_evm_sign::sign_transaction(hex_raw_tx, chain_id, principal_id)
         .await
         .map_err(|e| format!("Failed to call sign_with_ecdsa {}", e))
         .unwrap();
 
-    Ok(SignatureInfo {
+    Ok(SignTransactionResponse {
         sign_tx: res.sign_tx,
     })
 }
@@ -61,13 +66,13 @@ fn clear_caller_history(chain_id: u64) -> Result<(), String> {
 }
 
 #[query]
-fn get_caller_data(chain_id: u64) -> Option<CallerResponse> {
+fn get_caller_data(chain_id: u64) -> Option<UserResponse> {
     let principal_id = ic_cdk::caller();
 
     let res = ic_evm_sign::get_caller_data(principal_id, chain_id);
 
     if let Some(caller) = res {
-        Some(CallerResponse {
+        Some(UserResponse {
             address: caller.address,
             transactions: caller.transactions,
         })

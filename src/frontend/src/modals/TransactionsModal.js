@@ -2,10 +2,8 @@ import {useToast, Modal, ModalBody, ModalCloseButton, ModalOverlay, ModalContent
 import { Table, Thead, Tbody, Tr, Th, Td, TableContainer } from "@chakra-ui/react"
 import { Button, IconButton  } from "@chakra-ui/react"
 import {  HiArrowTopRightOnSquare } from "react-icons/hi2";
-
 import { timeSinceShort } from '../helpers/utils'
 import { ethers } from "ethers"
-
 
 const TransactionsModal = ({ onClose, isOpen, actor, transactions, setTransactions, network }) => {
 

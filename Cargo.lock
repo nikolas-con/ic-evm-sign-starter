@@ -57,7 +57,7 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
 name = "backend"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "candid",
  "ic-cdk",
@@ -633,7 +633,9 @@ dependencies = [
 
 [[package]]
 name = "ic-evm-sign"
-version = "0.1.0"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c0058b0dbecf8370884f24207eaa33b59b7a1444e0116e9c3d36f50f4b2d79f4"
 dependencies = [
  "candid",
  "easy-hasher",
