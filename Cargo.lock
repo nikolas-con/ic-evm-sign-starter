@@ -63,6 +63,7 @@ dependencies = [
  "ic-cdk",
  "ic-cdk-macros",
  "ic-evm-sign",
+ "serde",
 ]
 
 [[package]]
