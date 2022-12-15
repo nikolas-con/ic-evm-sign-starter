@@ -32,25 +32,27 @@ import { getDelegationIdentity, getHostFromUrl } from "./helpers/utils";
 import { getActor } from "./helpers/actor";
 import { mainnets, testnets } from "./helpers/networks";
 import { IC_URL, IDENTITY_CANISTER_ID, LOCAL_SIGNER } from "./helpers/config";
+import { getAccountId } from "./helpers/account";
+import { BACKEND_CANISTER_ID } from "./helpers/config";
 
 const chainId = localStorage.getItem("chain-id") ?? 0;
 const defaultNetwork =
   [].concat(testnets, testnets).find((r) => r.chainId === +chainId) ??
   mainnets[0];
 
-const actor = getActor();
-
 const App = () => {
   const toast = useToast();
 
   const [authClient, setAuthClient] = useState(null);
   const [provider, setProvider] = useState(null);
+  const [actor, setActor] = useState(null);
   const [address, setAddress] = useState(null);
   const [balance, setBalance] = useState(null);
   const [hasCopied, setHasCopied] = useState(false);
   const [network, setNetwork] = useState(defaultNetwork);
   const [loggedIn, setLoggedIn] = useState(false);
   const [transactions, setTransactions] = useState([]);
+  const [cycles, setCycles] = useState(null);
   const {
     isOpen: isSendOpen,
     onOpen: onSendOpen,
@@ -68,13 +70,13 @@ const App = () => {
   } = useDisclosure();
 
   const loadUser = useCallback(
-    async (_provider) => {
+    async (_provider, _actor) => {
       try {
         setBalance();
-        const [caller] = await actor.get_caller_data(Number(network.chainId));
+        const [caller] = await _actor.get_caller_data(Number(network.chainId));
 
         if (caller) {
-          const { address, transactions } = caller;
+          const { address, transactions, cycles_balance } = caller;
           setAddress(address);
           setTransactions(
             transactions.transactions.map((tx) => ({
@@ -83,8 +85,8 @@ const App = () => {
             }))
           );
           const balance = await _provider.getBalance(address);
-          console.log(ethers.utils.formatEther(balance));
           setBalance(ethers.utils.formatEther(balance));
+          setCycles(cycles_balance);
         }
       } catch (error) {
         console.log(error);
@@ -103,11 +105,16 @@ const App = () => {
   const onLogin = async () => {
     setLoggedIn(true);
 
-    const identity = authClient.getIdentity();
-    localStorage.setItem("identity", JSON.stringify(identity));
-    localStorage.setItem("key", JSON.stringify(authClient._key));
+    let identity = authClient.getIdentity();
+    if (identity._inner._inner) {
+      identity = identity._inner;
+    }
 
-    await loadUser(provider);
+    localStorage.setItem("identity", JSON.stringify(identity));
+    const _actor = getActor(identity);
+    setActor(_actor);
+
+    await loadUser(provider, _actor);
   };
 
   const onLogout = () => {
@@ -135,8 +142,10 @@ const App = () => {
 
     if (delegationIdentity) {
       setLoggedIn(true);
-
-      await loadUser(rpcProvider);
+      const identity = _authClient.getIdentity();
+      const _actor = getActor(identity);
+      setActor(_actor);
+      await loadUser(rpcProvider, _actor);
     }
   }, [loadUser, network.rpc]);
 
@@ -149,7 +158,7 @@ const App = () => {
     const identityProvider = isLocal
       ? `${IC_URL}?canisterId=${IDENTITY_CANISTER_ID}`
       : "https://identity.ic0.app/#authorize";
-    const maxTimeToLive = 24n * 60n * 60n * 1000n * 1000n;
+    const maxTimeToLive = 24n * 60n * 60n * 1000n * 1000n * 1000n;
     authClient.login({
       onSuccess: onLogin,
       identityProvider,
@@ -189,6 +198,25 @@ const App = () => {
     const balance = await provider.getBalance(address);
     setBalance(ethers.utils.formatEther(balance));
     setAddress(address);
+  };
+
+  const topupCycles = async () => {
+    toast({ title: "Top up...", variant: "subtle" });
+
+    const res = await actor.convert_to_cycles();
+
+    toast({ title: "Top up finish" });
+
+    const _cycles = res.Ok;
+    setCycles(_cycles);
+  };
+
+  const subAccount = async () => {
+    const subAccount = getAccountId(
+      BACKEND_CANISTER_ID,
+      authClient.getIdentity().getPrincipal().toString()
+    );
+    console.log(subAccount);
   };
 
   const copyToClipboard = async () => {
@@ -263,32 +291,51 @@ const App = () => {
                       </Flex>
                       <Flex mb="12px">
                         {address && (
-                          <Flex alignItems="center">
-                            <Text>
-                              {address.slice(0, 10)}...{address.slice(-8)}
-                            </Text>
-                            <IconButton
-                              onClick={copyToClipboard}
-                              ml="8px"
-                              fontSize="16px"
-                              size="xs"
-                              variant="ghost"
-                              icon={
-                                hasCopied ? (
-                                  <HiOutlineClipboardDocumentCheck />
-                                ) : (
-                                  <HiOutlineClipboardDocument />
-                                )
-                              }
-                            />
-                            <IconButton
-                              onClick={goToExplorer}
-                              ml="4px"
-                              fontSize="16px"
-                              size="xs"
-                              variant="ghost"
-                              icon={<HiArrowTopRightOnSquare />}
-                            />
+                          <Flex flexDir="column" alignItems="center">
+                            <Flex alignItems="center">
+                              <Text>
+                                {address.slice(0, 10)}...{address.slice(-8)}
+                              </Text>
+                              <IconButton
+                                onClick={copyToClipboard}
+                                ml="8px"
+                                fontSize="16px"
+                                size="xs"
+                                variant="ghost"
+                                icon={
+                                  hasCopied ? (
+                                    <HiOutlineClipboardDocumentCheck />
+                                  ) : (
+                                    <HiOutlineClipboardDocument />
+                                  )
+                                }
+                              />
+                              <IconButton
+                                onClick={goToExplorer}
+                                ml="4px"
+                                fontSize="16px"
+                                size="xs"
+                                variant="ghost"
+                                icon={<HiArrowTopRightOnSquare />}
+                              />
+                            </Flex>
+                            <Flex>
+                              <Text>{cycles?.toString()}</Text>
+                              <Button
+                                size="xs"
+                                variant="outline"
+                                onClick={topupCycles}
+                              >
+                                Top up cycles
+                              </Button>
+                              <Button
+                                size="xs"
+                                variant="outline"
+                                onClick={subAccount}
+                              >
+                                Print Subaccount
+                              </Button>
+                            </Flex>
                           </Flex>
                         )}
                       </Flex>

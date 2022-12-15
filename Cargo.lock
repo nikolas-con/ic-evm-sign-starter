@@ -60,10 +60,12 @@ name = "backend"
 version = "1.0.0"
 dependencies = [
  "candid",
+ "crc32fast",
  "ic-cdk",
  "ic-cdk-macros",
  "ic-evm-sign",
  "serde",
+ "sha2 0.10.6",
 ]
 
 [[package]]

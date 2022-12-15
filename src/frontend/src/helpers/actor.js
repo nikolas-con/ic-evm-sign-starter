@@ -1,6 +1,6 @@
 import { Actor, HttpAgent } from "@dfinity/agent";
 import { Principal } from "@dfinity/principal";
-import {IC_URL, BACKEND_CANISTER_ID} from './config'
+import { IC_URL, BACKEND_CANISTER_ID } from "./config";
 
 const idleServiceOptions = (IDL) => {
   const transactions = IDL.Record({
@@ -21,6 +21,7 @@ const idleServiceOptions = (IDL) => {
   const caller_response = IDL.Record({
     address: IDL.Text,
     transactions: chainData,
+    cycles_balance: IDL.Nat,
   });
 
   return {
@@ -44,16 +45,21 @@ const idleServiceOptions = (IDL) => {
       [IDL.Opt(caller_response)],
       ["query"]
     ),
+    convert_to_cycles: IDL.Func(
+      [],
+      [IDL.Variant({ Ok: IDL.Nat, Err: IDL.Text })],
+      ["update"]
+    ),
   };
 };
 
 const idlFactory = ({ IDL }) => IDL.Service(idleServiceOptions(IDL));
 
-export const getActor = () => {
+export const getActor = (identity) => {
   const backendCanisterId = Principal.fromText(BACKEND_CANISTER_ID);
-  const agent = new HttpAgent({ host: IC_URL });
+  const agent = new HttpAgent({ host: IC_URL, identity });
   agent.fetchRootKey();
-  const createActorOptions = { agent, canisterId: backendCanisterId };
+  const createActorOptions = { agent, canisterId: backendCanisterId, identity };
   const _actor = Actor.createActor(idlFactory, createActorOptions);
-  return _actor
-}
+  return _actor;
+};

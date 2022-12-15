@@ -5,6 +5,9 @@ use ic_evm_sign::state::{Environment, State, TransactionChainData, STATE};
 use std::cell::RefCell;
 use std::collections::HashMap;
 
+mod types;
+use crate::types::*;
+
 #[derive(Debug, CandidType)]
 struct CreateAddressResponse {
     address: String,
@@ -22,12 +25,12 @@ struct DeployEVMContractResponse {
 struct UserResponse {
     address: String,
     transactions: TransactionChainData,
-    cycles_balance: u64,
+    cycles_balance: u128,
 }
 
 #[derive(Default, CandidType, Deserialize, Debug, Clone)]
 pub struct CanisterState {
-    pub user_balances: HashMap<Principal, u64>,
+    pub user_balances: HashMap<Principal, u128>,
 }
 #[derive(CandidType, Deserialize)]
 struct StableState {
@@ -64,12 +67,32 @@ async fn sign_evm_tx(
     chain_id: u64,
 ) -> Result<SignTransactionResponse, String> {
     let principal = ic_cdk::caller();
-    // let user_balances = CANISTER_STATE.with(|s| s.borrow().clone());
-    // if state.user_balances.get(&principal)
+    let canister_state = CANISTER_STATE.with(|s| s.borrow().clone());
+    let user_balance;
+
+    if let Some(user) = canister_state.user_balances.get(&principal) {
+        user_balance = user.to_owned();
+    } else {
+        return Err("This user does not exist".to_string());
+    }
+
+    let config = STATE.with(|s| s.borrow().config.clone());
+    let sign_cycles = u128::try_from(config.sign_cycles).unwrap();
+    if user_balance < sign_cycles {
+        return Err("Not enough funds".to_string());
+    }
+
     let res = ic_evm_sign::sign_transaction(hex_raw_tx, chain_id, principal)
         .await
         .map_err(|e| format!("Failed to call sign_with_ecdsa {}", e))
         .unwrap();
+
+    CANISTER_STATE.with(|s| {
+        let mut state = s.borrow_mut();
+
+        let user_balance = state.user_balances.get_mut(&principal).unwrap();
+        *user_balance = *user_balance - sign_cycles;
+    });
 
     Ok(SignTransactionResponse {
         sign_tx: res.sign_tx,
@@ -88,19 +111,18 @@ fn clear_caller_history(chain_id: u64) -> Result<(), String> {
 }
 
 #[update]
-fn convert_to_cycles() -> u64 {
+async fn convert_to_cycles() -> Result<u128, String> {
     let principal = ic_cdk::caller();
-    // user_cycles_balance
     let config = STATE.with(|s| s.borrow().config.clone());
-    let cycles_fees;
+    let cycles;
 
     if config.env == Environment::Development {
-        cycles_fees = 10_000_000_000;
+        cycles = 10_000_000_000;
     } else {
-        cycles_fees = config.sign_cycles;
+        cycles = transfer_and_notify().await.unwrap();
     }
 
-    update_user_cycles(principal, cycles_fees)
+    Ok(update_user_cycles(principal, cycles))
 }
 
 #[query]
@@ -122,8 +144,84 @@ fn get_caller_data(chain_id: u64) -> Option<UserResponse> {
         None
     }
 }
+async fn get_balance(caller: Principal) -> Tokens {
+    let canister_id = ic_cdk::id();
 
-fn update_user_cycles(user: Principal, cycles: u64) -> u64 {
+    let subaccount = subaccount_from_principal(&caller);
+
+    let account = AccountIdentifier::new(&canister_id, &subaccount);
+
+    let account_balance_args = AccountBalanceArgs { account: account };
+
+    let account_balance_result: (Tokens,) = ic_cdk::call(
+        MAINNET_LEDGER_CANISTER_ID,
+        "account_balance",
+        (account_balance_args,),
+    )
+    .await
+    .map_err(|(code, msg)| format!("Account balance error: {}: {}", code as u8, msg))
+    .unwrap();
+
+    account_balance_result.0
+}
+
+async fn transfer_and_notify() -> Result<u128, String> {
+    let cmc_canister_id = MAINNET_CYCLES_MINTING_CANISTER_ID;
+    let canister_id = ic_cdk::id();
+    let caller = ic_cdk::caller();
+
+    let subaccount_caller = subaccount_from_principal(&caller);
+    let subaccount_canister = subaccount_from_principal(&canister_id);
+
+    let balance = get_balance(caller).await;
+    let transfer_fee = Tokens { e8s: 10_000 };
+
+    let amount = balance.e8s - transfer_fee.e8s;
+
+    let transfer_args = TransferArgs {
+        memo: Memo(1347768404),
+        amount: Tokens { e8s: amount },
+        fee: transfer_fee,
+        from_subaccount: Some(subaccount_caller),
+        to: AccountIdentifier::new(&cmc_canister_id, &subaccount_canister),
+        created_at_time: None,
+    };
+
+    let transfer_result: (TransferResult,) =
+        ic_cdk::call(MAINNET_LEDGER_CANISTER_ID, "transfer", (transfer_args,))
+            .await
+            .map_err(|(code, msg)| format!("Transfer error: {}: {}", code as u8, msg))
+            .unwrap();
+
+    let transfer_block = transfer_result.0.unwrap();
+
+    // notify top_up
+    let notify_args = NotifyTopupArgs {
+        block_index: transfer_block,
+        canister_id: ic_cdk::id(),
+    };
+    let (notify_enum,): (NotifyTopUpResult,) =
+        ic_cdk::call(cmc_canister_id, "notify_top_up", (notify_args,))
+            .await
+            .map_err(|(code, msg)| format!("Notify topup  error: {}: {}", code as u8, msg))
+            .unwrap();
+
+    let notify_result = match &notify_enum {
+        NotifyTopUpResult::Ok(x) => Ok(x),
+        NotifyTopUpResult::Err(x) => Err(x),
+    };
+    Ok(notify_result.unwrap().clone())
+}
+
+fn subaccount_from_principal(principal_id: &Principal) -> Subaccount {
+    let mut subaccount = [0; std::mem::size_of::<Subaccount>()];
+    let principal_id = principal_id.as_slice();
+    subaccount[0] = principal_id.len().try_into().unwrap();
+    subaccount[1..1 + principal_id.len()].copy_from_slice(principal_id);
+    Subaccount(subaccount)
+}
+
+fn update_user_cycles(user: Principal, cycles: u128) -> u128 {
     CANISTER_STATE.with(|s| {
         let mut state = s.borrow_mut();
 
