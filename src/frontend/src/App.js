@@ -401,6 +401,7 @@ const App = () => {
             <SendFundsModal
               network={network}
               provider={provider}
+              setCycles={setCycles}
               setWaiting={setWaiting}
               setTransactions={setTransactions}
               setBalance={setBalance}

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useToast,Modal, ModalBody, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, Flex, Input, ModalFooter, Button } from '@chakra-ui/react';
 import { ethers } from "ethers";
 
-const SendFundsModal = ({ provider, network, setTransactions, setBalance, setWaiting, actor, address, onClose, isOpen }) => {
+const SendFundsModal = ({ provider, network, setTransactions, setBalance, setCycles, setWaiting, actor, address, onClose, isOpen }) => {
   const [amount, setAmount] = useState("");
   const [destination, setDestination] = useState("");
   const toast = useToast()
@@ -49,7 +49,10 @@ const SendFundsModal = ({ provider, network, setTransactions, setBalance, setWai
 
     const balance = await provider.getBalance(address);
     setBalance(ethers.utils.formatEther(balance));
+
     setTransactions((txs) => [...txs, { data: signedTx, timestamp: new Date() }]);
+    // console.log(res)
+    setCycles(e => e - res.Ok.sign_cycles);
   };
 
   return (

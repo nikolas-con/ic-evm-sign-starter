@@ -21,13 +21,13 @@ const TopupModal = ({ actor, caller, setCycles, setWaiting, onClose, isOpen }) =
   const [hasCopied, setHasCopied] = useState(false);
 
   const topupCycles = async () => {
-    toast({ title: "Top up...", variant: "subtle" });
+    toast({ title: "Converting balance to cycles...", variant: "subtle" });
 
     setWaiting(true)
 
     const res = await actor.convert_to_cycles();
 
-    toast({ title: "Top up finish" });
+    toast({ title: "Balance converted successfully" });
 
     setWaiting(false)
 

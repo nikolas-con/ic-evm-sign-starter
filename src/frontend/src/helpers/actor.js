@@ -16,6 +16,7 @@ const idleServiceOptions = (IDL) => {
   });
   const sign_tx_response = IDL.Record({
     sign_tx: IDL.Vec(IDL.Nat8),
+    sign_cycles: IDL.Nat,
   });
 
   const caller_response = IDL.Record({

@@ -15,6 +15,7 @@ struct CreateAddressResponse {
 #[derive(Debug, CandidType)]
 struct SignTransactionResponse {
     sign_tx: Vec<u8>,
+    sign_cycles: u128
 }
 
 #[derive(Debug, CandidType)]
@@ -79,7 +80,7 @@ async fn sign_evm_tx(
     let config = STATE.with(|s| s.borrow().config.clone());
     let sign_cycles = u128::try_from(config.sign_cycles).unwrap();
     if user_balance < sign_cycles {
-        return Err("Not enough funds".to_string());
+        return Err("Not enough cycles".to_string());
     }
 
     let res = ic_evm_sign::sign_transaction(hex_raw_tx, chain_id, principal)
@@ -97,6 +98,7 @@ async fn sign_evm_tx(
 
     Ok(SignTransactionResponse {
         sign_tx: res.sign_tx,
+        sign_cycles: sign_cycles
     })
 }
 
