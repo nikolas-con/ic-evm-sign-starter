@@ -13,6 +13,7 @@ import {
   IconButton,
   useToast,
   useDisclosure,
+  Link
 } from "@chakra-ui/react";
 import {
   HiClock,
@@ -419,6 +420,14 @@ const App = () => {
             />
           </Flex>
         </Flex>
+      </Box>
+      <Box position="fixed" bottom="20px" textAlign="center">
+        <Text color="gray">
+          Made with <Link color="black" href="https://github.com/nikolas-con/ic-evm-sign" isExternal>ic-evm-sign</Link>
+        </Text>
+        <Text color="gray">
+          by <Link color="black" href="https://twitter.com/andreas_tzionis" isExternal>@andreas_tzionis</Link> and <Link color="black" href="https://github.com/nikolas-con" isExternal>@nikolas-con</Link>
+        </Text>
       </Box>
     </Flex>
   );
