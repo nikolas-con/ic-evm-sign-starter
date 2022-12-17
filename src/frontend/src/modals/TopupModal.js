@@ -15,7 +15,7 @@ const docsLink = 'https://github.com/dfinity/portal/blob/master/docs/developer-d
 
 const isLocal = getHostFromUrl(IC_URL).startsWith("localhost");
 
-const TopupModal = ({ actor, caller, setCycles, onClose, isOpen }) => {
+const TopupModal = ({ actor, caller, setCycles, setWaiting, onClose, isOpen }) => {
 
   const toast = useToast();
   const [hasCopied, setHasCopied] = useState(false);
@@ -23,9 +23,13 @@ const TopupModal = ({ actor, caller, setCycles, onClose, isOpen }) => {
   const topupCycles = async () => {
     toast({ title: "Top up...", variant: "subtle" });
 
+    setWaiting(true)
+
     const res = await actor.convert_to_cycles();
 
     toast({ title: "Top up finish" });
+
+    setWaiting(false)
 
     const _cycles = res.Ok;
     setCycles(_cycles);

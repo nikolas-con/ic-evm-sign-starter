@@ -35,6 +35,7 @@ import { getActor } from "./helpers/actor";
 import { mainnets, testnets } from "./helpers/networks";
 import { IC_URL, IDENTITY_CANISTER_ID, LOCAL_SIGNER } from "./helpers/config";
 import { DEFAULT_CHAIN } from "./helpers/config";
+import { ellipsisAnimation } from "./helpers/animation";
 
 const isLocal = getHostFromUrl(IC_URL).startsWith("localhost");
 
@@ -54,6 +55,7 @@ const App = () => {
   const [hasCopied, setHasCopied] = useState(false);
   const [network, setNetwork] = useState(defaultNetwork);
   const [loggedIn, setLoggedIn] = useState(false);
+  const [waiting, setWaiting] = useState(false);
   const [transactions, setTransactions] = useState([]);
   const [cycles, setCycles] = useState(null);
   const {
@@ -392,12 +394,14 @@ const App = () => {
               actor={actor}
               caller={authClient?.getIdentity().getPrincipal()}
               setCycles={setCycles}
+              setWaiting={setWaiting}
               isOpen={isTopupOpen}
               onClose={onTopupClose}
             />
             <SendFundsModal
               network={network}
               provider={provider}
+              setWaiting={setWaiting}
               setTransactions={setTransactions}
               setBalance={setBalance}
               actor={actor}
@@ -429,6 +433,12 @@ const App = () => {
           by <Link color="black" href="https://twitter.com/andreas_tzionis" isExternal>@andreas_tzionis</Link> and <Link color="black" href="https://github.com/nikolas-con" isExternal>@nikolas-con</Link>
         </Text>
       </Box>
+      {waiting && <Box position="fixed" top="20px" textAlign="center">
+        <Flex flexDir="column" alignItems="center">
+          <style children={ellipsisAnimation}/>
+          <Text display="flex" color="gray" width="236px" textAlign="start" className="loading">This may take a minute or two</Text>
+        </Flex>
+      </Box>}
     </Flex>
   );
 };

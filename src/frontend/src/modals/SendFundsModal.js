@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useToast,Modal, ModalBody, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, Flex, Input, ModalFooter, Button } from '@chakra-ui/react';
 import { ethers } from "ethers";
 
-const SendFundsModal = ({ provider, network, setTransactions, setBalance, actor, address, onClose, isOpen }) => {
+const SendFundsModal = ({ provider, network, setTransactions, setBalance, setWaiting, actor, address, onClose, isOpen }) => {
   const [amount, setAmount] = useState("");
   const [destination, setDestination] = useState("");
   const toast = useToast()
@@ -11,6 +11,8 @@ const SendFundsModal = ({ provider, network, setTransactions, setBalance, actor,
     e.preventDefault();
 
     onClose()
+
+    setWaiting(true)
 
     const nonce = await provider.getTransactionCount(address)
     const gasPrice = await provider.getGasPrice().then((s) => s.toHexString())
@@ -42,6 +44,8 @@ const SendFundsModal = ({ provider, network, setTransactions, setBalance, actor,
 
     await provider.waitForTransaction(hash);
     toast({ title: `Transfered ${amount} ${network.nativeCurrency.symbol}` });
+
+    setWaiting(false)
 
     const balance = await provider.getBalance(address);
     setBalance(ethers.utils.formatEther(balance));
