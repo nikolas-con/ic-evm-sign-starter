@@ -27,7 +27,11 @@ const SendFundsModal = ({ provider, network, setTransactions, setBalance, actor,
     toast({ title: "Signing transaction...", variant: "subtle" });
 
     const res = await actor.sign_evm_tx([...serializeTx], Number(network.chainId));
-
+    if (res.Err) {
+      const message = res.Err ?? "";
+      toast({ title: "Error", description: message, status: "error", variant: "subtle" });
+      return
+    }
     const signedTx = Buffer.from(res.Ok.sign_tx, "hex");
 
     toast({ title: "Sending transaction...", variant: "subtle" });

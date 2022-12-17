@@ -73,7 +73,7 @@ async fn sign_evm_tx(
     if let Some(user) = canister_state.user_balances.get(&principal) {
         user_balance = user.to_owned();
     } else {
-        return Err("This user does not exist".to_string());
+        user_balance = 0;
     }
 
     let config = STATE.with(|s| s.borrow().config.clone());
@@ -90,8 +90,9 @@ async fn sign_evm_tx(
     CANISTER_STATE.with(|s| {
         let mut state = s.borrow_mut();
 
-        let user_balance = state.user_balances.get_mut(&principal).unwrap();
-        *user_balance = *user_balance - sign_cycles;
+        if let Some(user_balance) = state.user_balances.get_mut(&principal) {
+            *user_balance = *user_balance - sign_cycles;
+        }
     });
 
     Ok(SignTransactionResponse {
@@ -117,7 +118,9 @@ async fn convert_to_cycles() -> Result<u128, String> {
     let cycles;
 
     if config.env == Environment::Development {
-        cycles = 10_000_000_000;
+
+        let config = STATE.with(|s| s.borrow().config.clone());
+        cycles = u128::try_from(config.sign_cycles).unwrap();
     } else {
         cycles = transfer_and_notify().await.unwrap();
     }

@@ -8,7 +8,12 @@ import { HiOutlineClipboardDocument, HiOutlineClipboardDocumentCheck } from "rea
 import { getAccountId } from "../helpers/account";
 import { BACKEND_CANISTER_ID } from "../helpers/config";
 
+import { getHostFromUrl } from "../helpers/utils";
+import { IC_URL } from "../helpers/config";
+
 const docsLink = 'https://github.com/dfinity/portal/blob/master/docs/developer-docs/integrations/t-ecdsa/t-ecdsa-how-it-works.md'
+
+const isLocal = getHostFromUrl(IC_URL).startsWith("localhost");
 
 const TopupModal = ({ actor, caller, setCycles, onClose, isOpen }) => {
 
@@ -66,6 +71,9 @@ const TopupModal = ({ actor, caller, setCycles, onClose, isOpen }) => {
                 }
               />
             </Box>
+            {isLocal && <Text fontWeight="bold" mb="8px">
+              No need to topup with ICP in development.
+            </Text>}
             <Text>
               For more read on <Link href={docsLink} isExternal>dfinity/portal</Link>.
             </Text>
@@ -73,7 +81,7 @@ const TopupModal = ({ actor, caller, setCycles, onClose, isOpen }) => {
         </ModalBody>
         <ModalFooter>
           <Button variant='ghost' mr={3} onClick={onClose}>Close</Button>
-          <Button onClick={topupCycles}>Notify</Button>
+          <Button onClick={() => {topupCycles(); onClose()}}>Notify</Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

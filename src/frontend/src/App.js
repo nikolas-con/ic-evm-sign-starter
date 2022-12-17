@@ -35,6 +35,8 @@ import { mainnets, testnets } from "./helpers/networks";
 import { IC_URL, IDENTITY_CANISTER_ID, LOCAL_SIGNER } from "./helpers/config";
 import { DEFAULT_CHAIN } from "./helpers/config";
 
+const isLocal = getHostFromUrl(IC_URL).startsWith("localhost");
+
 const chainId = localStorage.getItem("chain-id") ?? DEFAULT_CHAIN;
 const defaultNetwork =
   [].concat(testnets, testnets).find((r) => r.chainId === +chainId) ??
@@ -159,7 +161,6 @@ const App = () => {
   }, [loadProviderAndUser, network]);
 
   const login = async () => {
-    const isLocal = getHostFromUrl(IC_URL).startsWith("localhost");
     const identityProvider = isLocal
       ? `${IC_URL}?canisterId=${IDENTITY_CANISTER_ID}`
       : "https://identity.ic0.app/#authorize";
@@ -306,13 +307,13 @@ const App = () => {
                               />
                             </Flex>
                             <Flex>
-                            {cycles > 0n ?
+                            {(cycles > 0n || isLocal) ?
                               <Button
                                 size="xs"
                                 variant="outline"
                                 onClick={() => onTopupOpen()}
                               >
-                                {(Number(cycles * 1000n / 1_000_000_000_000n) / 1000 )?.toPrecision(2)}T Cycles
+                                {(Number((cycles ?? 0n) * 1000n / 1_000_000_000_000n) / 1000 )?.toPrecision(2)}T Cycles
                               </Button> :
                               <Button
                                 size="xs"
@@ -361,7 +362,7 @@ const App = () => {
                   ml="8px"
                   onClick={onSendOpen}
                   leftIcon={<HiPlusCircle />}
-                  disabled={!loggedIn || !address}
+                  disabled={!loggedIn || !address || !(cycles > 0n || isLocal)}
                 >
                   Transfer
                 </Button>
