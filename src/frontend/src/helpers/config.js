@@ -1,5 +1,6 @@
 import { getPrincipalText } from "./utils";
 
+export const DEFAULT_CHAIN = process.env.REACT_APP_DEFAULT_CHAIN ?? 31137;
 export const LOCAL_SIGNER = process.env.REACT_APP_LOCAL_SIGNER;
 export const IC_URL = process.env.REACT_APP_IC_URL ?? "http://localhost:8000";
 export const BACKEND_CANISTER_ID =

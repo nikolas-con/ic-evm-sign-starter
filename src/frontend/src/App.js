@@ -27,15 +27,15 @@ import {
 import SendFundsModal from "./modals/SendFundsModal";
 import TransactionsModal from "./modals/TransactionsModal";
 import NetworkModal from "./modals/NetworkModal";
+import TopupModal from "./modals/TopupModal";
 
 import { getDelegationIdentity, getHostFromUrl } from "./helpers/utils";
 import { getActor } from "./helpers/actor";
 import { mainnets, testnets } from "./helpers/networks";
 import { IC_URL, IDENTITY_CANISTER_ID, LOCAL_SIGNER } from "./helpers/config";
-import { getAccountId } from "./helpers/account";
-import { BACKEND_CANISTER_ID } from "./helpers/config";
+import { DEFAULT_CHAIN } from "./helpers/config";
 
-const chainId = localStorage.getItem("chain-id") ?? 0;
+const chainId = localStorage.getItem("chain-id") ?? DEFAULT_CHAIN;
 const defaultNetwork =
   [].concat(testnets, testnets).find((r) => r.chainId === +chainId) ??
   mainnets[0];
@@ -67,6 +67,11 @@ const App = () => {
     isOpen: isNetworkOpen,
     onOpen: onNetworkOpen,
     onClose: onNetworkClose,
+  } = useDisclosure();
+  const {
+    isOpen: isTopupOpen,
+    onOpen: onTopupOpen,
+    onClose: onTopupClose,
   } = useDisclosure();
 
   const loadUser = useCallback(
@@ -200,25 +205,6 @@ const App = () => {
     setAddress(address);
   };
 
-  const topupCycles = async () => {
-    toast({ title: "Top up...", variant: "subtle" });
-
-    const res = await actor.convert_to_cycles();
-
-    toast({ title: "Top up finish" });
-
-    const _cycles = res.Ok;
-    setCycles(_cycles);
-  };
-
-  const subAccount = async () => {
-    const subAccount = getAccountId(
-      BACKEND_CANISTER_ID,
-      authClient.getIdentity().getPrincipal().toString()
-    );
-    console.log(subAccount);
-  };
-
   const copyToClipboard = async () => {
     setHasCopied(true);
 
@@ -292,7 +278,7 @@ const App = () => {
                       <Flex mb="12px">
                         {address && (
                           <Flex flexDir="column" alignItems="center">
-                            <Flex alignItems="center">
+                            <Flex alignItems="center" mb="8px">
                               <Text>
                                 {address.slice(0, 10)}...{address.slice(-8)}
                               </Text>
@@ -320,21 +306,22 @@ const App = () => {
                               />
                             </Flex>
                             <Flex>
-                              <Text>{cycles?.toString()}</Text>
+                            {cycles > 0n ?
                               <Button
                                 size="xs"
                                 variant="outline"
-                                onClick={topupCycles}
+                                onClick={() => onTopupOpen()}
                               >
-                                Top up cycles
-                              </Button>
+                                {(Number(cycles * 1000n / 1_000_000_000_000n) / 1000 )?.toPrecision(2)}T Cycles
+                              </Button> :
                               <Button
                                 size="xs"
                                 variant="outline"
-                                onClick={subAccount}
+                                colorScheme='yellow'
+                                onClick={() => onTopupOpen()}
                               >
-                                Print Subaccount
-                              </Button>
+                                Not enough cycles
+                              </Button>}
                             </Flex>
                           </Flex>
                         )}
@@ -399,6 +386,13 @@ const App = () => {
               </Button>
             </Box>
 
+            <TopupModal
+              actor={actor}
+              caller={authClient?.getIdentity().getPrincipal()}
+              setCycles={setCycles}
+              isOpen={isTopupOpen}
+              onClose={onTopupClose}
+            />
             <SendFundsModal
               network={network}
               provider={provider}
