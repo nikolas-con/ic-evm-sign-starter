@@ -13,7 +13,7 @@ import {
   IconButton,
   useToast,
   useDisclosure,
-  Link
+  Link,
 } from "@chakra-ui/react";
 import {
   HiClock,
@@ -310,22 +310,30 @@ const App = () => {
                               />
                             </Flex>
                             <Flex>
-                            {(cycles > 0n || isLocal) ?
-                              <Button
-                                size="xs"
-                                variant="outline"
-                                onClick={() => onTopupOpen()}
-                              >
-                                {(Number((cycles ?? 0n) * 1000n / 1_000_000_000_000n) / 1000 )?.toPrecision(2)}T Cycles
-                              </Button> :
-                              <Button
-                                size="xs"
-                                variant="outline"
-                                colorScheme='yellow'
-                                onClick={() => onTopupOpen()}
-                              >
-                                Not enough cycles
-                              </Button>}
+                              {cycles > 0n || isLocal ? (
+                                <Button
+                                  size="xs"
+                                  variant="outline"
+                                  onClick={() => onTopupOpen()}
+                                >
+                                  {(
+                                    Number(
+                                      ((cycles ?? 0n) * 1000n) /
+                                        1_000_000_000_000n
+                                    ) / 1000
+                                  )?.toPrecision(2)}
+                                  T Cycles
+                                </Button>
+                              ) : (
+                                <Button
+                                  size="xs"
+                                  variant="outline"
+                                  colorScheme="yellow"
+                                  onClick={() => onTopupOpen()}
+                                >
+                                  Not enough cycles
+                                </Button>
+                              )}
                             </Flex>
                           </Flex>
                         )}
@@ -428,18 +436,46 @@ const App = () => {
       </Box>
       <Box position="fixed" bottom="20px" textAlign="center">
         <Text color="gray">
-          Made with <Link color="black" href="https://github.com/nikolas-con/ic-evm-sign" isExternal>ic-evm-sign</Link>
+          Made with{" "}
+          <Link
+            color="black"
+            href="https://github.com/nikolas-con/ic-evm-sign"
+            isExternal
+          >
+            ic-evm-sign
+          </Link>
         </Text>
         <Text color="gray">
-          by <Link color="black" href="https://twitter.com/andreas_tzionis" isExternal>@andreas_tzionis</Link> and <Link color="black" href="https://github.com/nikolas-con" isExternal>@nikolas-con</Link>
+          by{" "}
+          <Link
+            color="black"
+            href="https://twitter.com/andreas_tzionis"
+            isExternal
+          >
+            @andreas_tzionis
+          </Link>{" "}
+          and{" "}
+          <Link color="black" href="https://github.com/nikolas-con" isExternal>
+            @nikolas-con
+          </Link>
         </Text>
       </Box>
-      {waiting && <Box position="fixed" top="20px" textAlign="center">
-        <Flex flexDir="column" alignItems="center">
-          <style children={ellipsisAnimation}/>
-          <Text display="flex" color="gray" width="236px" textAlign="start" className="loading">This may take a minute or two</Text>
-        </Flex>
-      </Box>}
+      {waiting && (
+        <Box position="fixed" top="20px" textAlign="center">
+          <Flex flexDir="column" alignItems="center">
+            <style children={ellipsisAnimation} />
+            <Text
+              display="flex"
+              color="gray"
+              width="236px"
+              textAlign="start"
+              className="loading"
+            >
+              This may take a minute or two
+            </Text>
+          </Flex>
+        </Box>
+      )}
     </Flex>
   );
 };
