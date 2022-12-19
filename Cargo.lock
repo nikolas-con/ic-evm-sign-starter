@@ -636,9 +636,9 @@ dependencies = [
 
 [[package]]
 name = "ic-evm-sign"
-version = "0.1.1"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c0058b0dbecf8370884f24207eaa33b59b7a1444e0116e9c3d36f50f4b2d79f4"
+checksum = "a13eaa88e72f671a8e69854b679e4ee02bc17894e0c624a1be6ba872ee83e929"
 dependencies = [
  "candid",
  "easy-hasher",
