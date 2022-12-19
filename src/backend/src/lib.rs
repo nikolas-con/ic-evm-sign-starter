@@ -15,7 +15,7 @@ struct CreateAddressResponse {
 #[derive(Debug, CandidType)]
 struct SignTransactionResponse {
     sign_tx: Vec<u8>,
-    sign_cycles: u128
+    sign_cycles: u128,
 }
 
 #[derive(Debug, CandidType)]
@@ -98,7 +98,7 @@ async fn sign_evm_tx(
 
     Ok(SignTransactionResponse {
         sign_tx: res.sign_tx,
-        sign_cycles: sign_cycles
+        sign_cycles: sign_cycles,
     })
 }
 
@@ -120,8 +120,6 @@ async fn convert_to_cycles() -> Result<u128, String> {
     let cycles;
 
     if config.env == Environment::Development {
-
-        let config = STATE.with(|s| s.borrow().config.clone());
         cycles = u128::try_from(config.sign_cycles).unwrap();
     } else {
         cycles = transfer_and_notify().await.unwrap();

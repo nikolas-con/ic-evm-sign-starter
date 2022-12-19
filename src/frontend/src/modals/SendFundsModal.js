@@ -70,7 +70,6 @@ const SendFundsModal = ({
         status: "error",
         variant: "subtle",
       });
-      setWaiting(false);
       return;
     }
     const signedTx = Buffer.from(res.Ok.sign_tx, "hex");
