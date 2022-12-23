@@ -38,5 +38,5 @@ npm run build:frontend
 dfx deploy --network ic frontend --with-cycles 200000000000
 ```
 
-Then head to https://${FRONTEND_CANISTER_ID}.ic0.app/.
+Then head to `https://${FRONTEND_CANISTER_ID}.ic0.app/`.
 
