@@ -36,6 +36,7 @@ Deploy frontend:
 ```sh
 dfx deploy --network ic frontend --with-cycles 200000000000
 ```
+**Note:** Running `dfx deploy frontend` also builds the frontend react code.
 
 Then head to `https://${FRONTEND_CANISTER_ID}.ic0.app/`.
 
