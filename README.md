@@ -16,10 +16,12 @@ npm i
 
 Run in development:
 ```sh
-npm run start
+npm start
 ```
 
 Then head to `http://localhost:3000`.
+
+**Note:** The `npm start` script above starts 1) a local Internet Computer replica 2) a local hardhat node and 3) the React frontend of the project. After starting the IC replica it deploys the canister code and an Internet Identity canister for local authentication.
 
 ## Production
 
@@ -35,6 +37,3 @@ Deploy frontend:
 npm run build:frontend
 dfx deploy --network ic frontend --with-cycles 200000000000
 ```
-
-**Note:** The `npm start` script above starts 1) a local Internet Computer replica 2) a local hardhat node and 3) the React frontend of the project. After starting the IC replica it deploys the canister code and an Internet Identity canister for local authentication.
-
