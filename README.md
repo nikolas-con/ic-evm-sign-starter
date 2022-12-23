@@ -34,7 +34,6 @@ Then create `src/frontend/.env.production` with the backend canister id. Similar
 
 Deploy frontend:
 ```sh
-npm run build:frontend
 dfx deploy --network ic frontend --with-cycles 200000000000
 ```
 
