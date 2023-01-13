@@ -40,3 +40,10 @@ dfx deploy --network ic frontend --with-cycles 200000000000
 
 Then head to `https://${FRONTEND_CANISTER_ID}.ic0.app/`.
 
+# Security
+
+The code in [ic-evm-sign](https://github.com/nikolas-con/ic-evm-sign) that this starter project relies heavily on has not been audited (as of 13/1/22). Use it at your own risk.
+
+# Funding
+
+This library was initially incentivized by [ICDevs](https://icdevs.org/).
