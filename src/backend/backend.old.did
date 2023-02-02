@@ -32,5 +32,5 @@ service : ( opt variant {  Development; Staging; Production; } ) -> {
   sign_evm_tx: (hex_raw_tx : vec nat8,chain_id : nat64) -> (variant { Ok: SignTransactionResponse; Err: text;});
   clear_caller_history: (chain_id: nat64) -> (variant { Ok: null; Err: text;});
   convert_to_cycles: () -> (variant {Ok: nat; Err: text;});
-  get_caller_data:() -> (opt UserResponse) query;
+  get_caller_data:(chain_id: nat64) -> (opt UserResponse) query;
 };
