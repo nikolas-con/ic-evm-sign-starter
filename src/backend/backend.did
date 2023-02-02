@@ -1,1 +1,36 @@
-service : ( opt variant {  Development; Staging; Production; } ) -> {}
+type CreateAddressResponse = record {
+  address: text;
+};
+
+type SignTransactionResponse = record {
+  sign_tx: vec nat8;
+  sign_cycles: nat;
+};
+
+type DeployEVMContractResponse = record {
+  tx: vec nat8;
+};
+
+type Transaction = record {
+  data: vec nat8;
+  timestamp: nat64;
+};
+
+type TransactionChainData = record {
+  nonce: nat64;
+  transactions: vec Transaction;
+};
+
+type UserResponse = record {
+  address: text;
+  transactions: TransactionChainData;
+  cycles_balance: nat;
+}
+
+service : ( opt variant {  Development; Staging; Production; } ) -> {
+  create_address: () -> (variant { Ok: CreateAddressResponse; Err: text;});
+  sign_evm_tx: (hex_raw_tx : vec nat8,chain_id : nat64) -> (variant { Ok: SignTransactionResponse; Err: text;});
+  clear_caller_history: (chain_id: nat64) -> (variant { Ok: null; Err: text;});
+  convert_to_cycles: () -> (variant {Ok: nat; Err: text;});
+  get_caller_data:(chain_id: nat64) -> (opt UserResponse) query;
+};
